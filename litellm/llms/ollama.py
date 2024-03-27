@@ -156,12 +156,13 @@ def get_ollama_response(
     stream = optional_params.pop("stream", False)
     format = optional_params.pop("format", None)
     images = optional_params.pop("images", None)
+    api_params = optional_params.pop("api_params", {})
     data = {
         "model": model,
         "prompt": prompt,
         "options": optional_params,
         "stream": stream,
-    }
+    } | api_params
     if format is not None:
         data["format"] = format
     if images is not None:
@@ -296,6 +297,7 @@ async def ollama_async_streaming(url, data, model_response, encoding, logging_ob
 
 async def ollama_acompletion(url, data, model_response, encoding, logging_obj):
     data["stream"] = False
+
     try:
         timeout = aiohttp.ClientTimeout(total=litellm.request_timeout)  # 10 minutes
         async with aiohttp.ClientSession(timeout=timeout) as session:
